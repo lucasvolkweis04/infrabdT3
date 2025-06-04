@@ -1,0 +1,50 @@
+import csv
+
+def gerar_inserts(csv_file, tabela):
+    with open(csv_file, mode='r', encoding='utf-8') as file:
+        leitor_csv = csv.DictReader(file)
+        
+        # Imprimir os nomes das colunas para depuração
+        for linha in leitor_csv:
+            print(linha.keys())  # Isso vai mostrar todas as chaves (nomes das colunas)
+            break  # Apenas imprimir uma vez (primeira linha)
+
+        file.seek(0)  # Volta ao início do arquivo após a impressão para processar os dados
+        
+        # Itera sobre cada linha no CSV
+        for linha in leitor_csv:
+            municipio = linha['Municipio']  # Obtém o valor de municipio (ajuste conforme necessário)
+            ibge = linha['ibge']  # Obtém o valor de ibge
+            latitude = linha['latitude']  # Obtém a latitude
+            longitude = linha['longitude']  # Obtém a longitude
+            
+            # Lista das colunas de PIB por ano
+            pib_valores = [
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2010 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2011 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2012 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2013 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2014 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2015 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2016 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2017 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2018 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2019 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2020 (R$)'],
+                linha['Contabilidade Social/Serie 2002 em diante/PIB per capita 2021 (R$)']
+            ]
+            
+            # Cria a lista de colunas (pib_2010, pib_2011, ..., pib_2021)
+            colunas = ['pib_2010', 'pib_2011', 'pib_2012', 'pib_2013', 'pib_2014', 'pib_2015', 'pib_2016', 'pib_2017', 'pib_2018', 'pib_2019', 'pib_2020', 'pib_2021']
+            
+            # Cria a lista de valores (os PIBs de cada ano)
+            valores = ', '.join([f"'{v}'" if v != 'NULL' else 'NULL' for v in pib_valores])
+
+            # Cria a instrução INSERT
+            insert = f"INSERT INTO {tabela} (municipio, ibge, latitude, longitude, {', '.join(colunas)}) VALUES ('{municipio}', '{ibge}', '{latitude}', '{longitude}', {valores});"
+            print(insert)
+
+# Exemplo de uso:
+csv_file = 'C:\\Users\\Home\\Downloads\\seu_arquivo_sem_acentos.csv'  # Caminho para seu arquivo CSV
+tabela = 'pib_municipios'   # Nome da sua tabela no banco de dados
+gerar_inserts(csv_file, tabela)
